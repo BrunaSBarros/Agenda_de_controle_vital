@@ -1,4 +1,4 @@
-class RegistroVital {
+class RegistroSinais {
     constructor(dia, saturacao, pressao, frequencia) {
         this.dia = dia;
         this.saturacao = saturacao;
@@ -6,14 +6,64 @@ class RegistroVital {
         this.frequencia = frequencia;
     }
 
-    // Mostrar os dados já cadastrados
-    mostrar() {
-        return this.dia + " | Saturação: " + this.saturacao +
-            "% | Pressão: " + this.pressao +
-            " | Frequência: " + this.frequencia + " bpm\n";
+    mostrarSinais() {
+        return "Saturação: " + this.saturacao + "%\n" +
+            "Pressão: " + this.pressao + "\n" +
+            "Frequência cardíaca: " + this.frequencia + " bpm";
     }
 }
 
+
+class RegistroVital {
+    constructor(dia, saturacao, pressao, frequencia) {
+        this.dia = dia;
+        this.saturacao = saturacao;
+        this.pressao = pressao;
+        this.frequencia = frequencia;
+        this.frequencia = frequencia;
+        this.horario =  horario;
+        this.atividade = atividade;
+        this.sono = this.sono;
+        this.sintomas = sintomas;
+        this.observaçao = observaçao;
+    }
+
+    // Mostrar os dados já cadastrados
+    mostrar() {
+        return  "Dia: " + this.dia + "\n" +
+        "Horário " + this.horario + "\n" +
+        "Saturação: " + this.saturação + "\n" +
+        "Pressão Arterial: " + this.pressao + "\n" +
+        "Frequência Cardíaca: " + this.frequencia + "\n" +
+        "Atividade: " + this.atividade + "\n" +
+        "Sono: " + this.sono + "\n" +
+        "Sintomas: " + this.sintomas + "\n" +
+        "Observações: " + this.observaçao;
+    }
+}
+class CadastroPessoal {
+    constructor(idade, peso, altura) {
+        this.idade = idade;
+        this.peso = peso;
+        this.altura = altura;
+    }
+    calcularIMC() {
+        return  this.peso / (this.altura**2)
+    }
+    mostrarDados() {
+        let texto = "Idade: " + this.idade + " anos\n" +
+                    "Peso: " + this.peso + "\n" +
+                    "Altura: " + this.altura + "\n" +
+                    "IMC: " + this.calcularIMC().toFixed(2);
+
+        if (this.idade < 20) {
+            texto += "\nA interpretação do IMC para menores de 20 anos deve ser feita com base em referência de crescimento";
+        } else {
+            texto += "\nO IMC é apenas uma referência e não deve ser usado como único indicador de saúde. Consulte um profissional de saúde.";
+        }
+
+        return texto;
+    }
 class AgendaVital {
     constructor() {
         this.registros = [];
