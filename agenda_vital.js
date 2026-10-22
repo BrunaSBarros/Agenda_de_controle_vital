@@ -67,10 +67,32 @@ class CadastroPessoal {
 class AgendaVital {
     constructor() {
         this.registros = [];
+        this.cadastro = null;
         this.dias = [
             "Segunda-feira", "Terça-feira", "Quarta-feira",
             "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"
         ];
+    }
+     escolherDia() {
+        let texto = "Escolha o dia da semana:\n";
+
+        for (let i = 0; i < this.dias.length; i++) {
+            texto += (i + 1) + " - " + this.dias[i] + "\n";
+        }
+         let escolha = prompt(texto);
+
+        if (escolha === null || escolha === "") {
+            return null;
+        }
+
+        escolha = Number(escolha);
+
+        if (escolha < 1 || escolha > 7 || escolha % 1 !== 0) {
+            alert("Dia inválido.");
+            return null;
+        }
+
+        return this.dias[escolha - 1];
     }
 
     // Cadastro de registros
