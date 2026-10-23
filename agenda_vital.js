@@ -13,7 +13,6 @@ class RegistroSinais {
     }
 }
 
-
 class RegistroVital {
     constructor(dia, saturacao, pressao, frequencia) {
         this.dia = dia;
@@ -23,7 +22,7 @@ class RegistroVital {
         this.frequencia = frequencia;
         this.horario =  horario;
         this.atividade = atividade;
-        this.sono = this.sono;
+        this.sono = sono;
         this.sintomas = sintomas;
         this.observaçao = observaçao;
     }
@@ -32,7 +31,7 @@ class RegistroVital {
     mostrar() {
         return  "Dia: " + this.dia + "\n" +
         "Horário " + this.horario + "\n" +
-        "Saturação: " + this.saturação + "\n" +
+        "Saturação: " + this.saturaçao + "\n" +
         "Pressão Arterial: " + this.pressao + "\n" +
         "Frequência Cardíaca: " + this.frequencia + "\n" +
         "Atividade: " + this.atividade + "\n" +
@@ -64,6 +63,8 @@ class CadastroPessoal {
 
         return texto;
     }
+}
+
 class AgendaVital {
     constructor() {
         this.registros = [];
@@ -81,19 +82,61 @@ class AgendaVital {
         }
          let escolha = prompt(texto);
 
-        if (escolha === null || escolha === "") {
+        if (escolha == null || escolha == "") {
             return null;
         }
 
         escolha = Number(escolha);
 
-        if (escolha < 1 || escolha > 7 || escolha % 1 !== 0) {
+        if (escolha < 1 || escolha > 7 || escolha % 1 != 0) {
             alert("Dia inválido.");
             return null;
         }
 
         return this.dias[escolha - 1];
     }
+
+// Cadastrar Pessoa
+    cadastrarPessoa() {
+        let idade = parseInt(prompt('Qual a sua idade?'));
+
+    if (isNaN(idade)) {
+        alert('Cadastro cancelado');
+        return;
+    }
+
+    if (idade < 1 || idade > 120) {
+        alert('Cadastro cancelado');
+        return;
+    }
+
+    let peso = parseFloat(prompt('Qual é o seu peso? em kg'));
+
+    if (isNaN(peso) || peso <= 0) {
+        alert('Peso Inválido');
+        return;
+    }
+
+    let altura = Number(prompt("Qual a sua altura? em m"))
+ 
+    if (altura <= 0 || isNaN(altura)) {
+            alert("Altura inválida.");
+            return;  
+        }
+        
+        this.cadastro = new CadastroPessoal(idade, peso, altura);
+            alert("Cadastro realizado!\n" + this.cadastro.mostrarDados());
+   
+}
+
+mostrarCadastro() {
+    if (this.cadastro == null) {
+        alert("Nenhum cadastro pessoal foi realizado.");
+        return;
+    }
+
+    alert(this.cadastro.mostrarDados());
+}
 
     // Cadastro de registros
     cadastrar() {
@@ -112,14 +155,57 @@ class AgendaVital {
             alert("Dia inválido. Por favor, escolha um dia entre 1 e 7.");
             return;
         }
-
         let nomeDia = this.dias[escolha - 1];
+
+        let horario = Number(prompt("Qual horário do registro")) 
+        if (horario == null || horario == ""){
+            alert ("Cadastro cancelado")
+            return
+        }   
+
         let saturacao = Number(prompt("Saturação (%):"));
+        if (saturaçao == null || saturaçao == ""){
+            alert ("Cadastro cancelado")
+            return
+        }
+
         let pressao = prompt("Pressão Arterial (ex: 120/80):");
+        if (pressao == null || pressao == ""){
+            alert ("Cadastro cancelado")
+            return
+        }
         let frequencia = Number(prompt("Frequência Cardíaca (bpm):"));
+        if (frequencia == null || frequencia == ""){
+            alert ("Cadastro cancelado")
+            return
+        }
+
+        let atividade = prompt ("Qual atividade estava realizando?");
+        if (atividade == null || atividade == "") {
+            alert("Cadastro cancelado.");
+            return
+        }
+
+        let sono = Number("Quantas horas dormiu?")
+            if (sonoTexto == null || sonoTexto == "") {
+            alert("Cadastro cancelado.");
+            return;
+            }
+            if (sono < 0 || sono > 24 || isNaN(sono)) {
+                alert("Quantidade de sono inválida.");
+                return;
+            }
+
+        let sintomas = prompt("Apresentou algum sintoma? Se não, digite nenhum")
+        if (sintomas == null)
+            return
+
+        let observaçoes = prompt("Alguma observação adicional? Escreva aqui")
+        if (observaçao == null)
+           return
 
         this.registros.push(new RegistroVital(
-            nomeDia, saturacao, pressao, frequencia
+            nomeDia, horario,  saturacao, pressao, frequencia, atividade, sono, sintomas, observaçoes
         ));
 
         alert("Registro salvo com sucesso!");
@@ -168,13 +254,15 @@ Média cardíaca: ${mediaFrequencia} bpm`);
 let agenda = new AgendaVital();
 let opcao = 0;
 
-while (opcao != 4) {
+while (opcao != 6) {
     opcao = parseInt(prompt(
         `Agenda Vital - Sistema de Monitoramento
         1 - Cadastrar novos sinais
         2 - Consultar sinais já cadastrados
         3 - Gerar Relatório Semanal
-        4 - Sair do sistema
+        4 - Ver cadastro pessoal
+        5-  Cadastrar/Atualizar dados pessoais
+        6 - Sair do sistema
         Escolha uma opção:`
     ));
 
@@ -185,8 +273,12 @@ while (opcao != 4) {
     } else if (opcao == 3) {
         agenda.relatorio();
     } else if (opcao == 4) {
+        agenda.mostrarDados()
+    } else if (opcao == 5) {
+        agenda.cadastarPessoa()
+    } else if (opcao == 6) {
         alert("Encerrando a Agenda de Controle Vital.");
-    } else if (opcao<1 || opcao>4){
-        alert("Opção inválida. Escolha entre 1 e 4.");
+    } else if (opcao<1 || opcao>6){
+        alert("Opção inválida. Escolha entre 1 e 6.");
     }
 }
