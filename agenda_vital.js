@@ -21,6 +21,7 @@ class RegistroVital {
             "Sono: " + this.sono + " horas\n" +
             "Sintomas: " + this.sintomas + "\n" +
             "Observação: " + this.observacao;
+
     }
 }
 
@@ -70,12 +71,34 @@ class AgendaVital {
 
         return this.dias[escolha - 1];
     }
+    escolherAtividade() {
+        let texto = "Selecione a atividade no momento do registro:\n" +
+            "1 - Em Repouso\n" +
+            "2 - Atividade Leve\n" +
+            "3 - Atividade Moderada/Intensa";
+
+        let escolha = prompt(texto);
+        if (escolha === null || escolha == "") {
+            return null;
+        }
+
+        escolha = Number(escolha);
+        if (isNaN(escolha) || escolha < 1 || escolha > 3) {
+            alert("Opção inválida. Definido como Repouso por padrão.");
+            return "Em Repouso";
+        }
+
+        if (escolha == 2) return "Atividade Leve";
+        if (escolha == 3) return "Atividade Moderada/Intensa";
+        return "Em Repouso";
+    }
+
 
     // Cadastrar Pessoa
     cadastrarPessoa() {
         let idade = Number(prompt("Informe sua idade:"));
         let peso = Number(prompt("Informe seu peso em kg:"));
-        let altura = Number(prompt("Informe sua altura em :"));
+        let altura = Number(prompt("Informe sua altura em cm:"));
 
         if (isNaN(idade) || idade < 0 ||
             isNaN(peso) || peso <= 0 ||
@@ -144,7 +167,8 @@ class AgendaVital {
             return;
         }
 
-        let atividade = prompt("Qual atividade estava realizando?");
+        let atividade = this.escolherAtividade();
+        if (atividade === null) return;
         let sono = Number(prompt("Quantas horas dormiu?"));
         let sintomas = prompt("Apresentou algum sintoma?");
 
@@ -209,7 +233,7 @@ class AgendaVital {
             for (let j = 0; j < this.registros.length; j++) {
                 let reg = this.registros[j];
 
-                if (reg.dia === diaAtual) {
+                if (reg.dia == diaAtual) {
                     quantidade++;
                     somaSaturacao += reg.saturacao;
                     somaFrequencia += reg.frequencia;
@@ -227,8 +251,8 @@ class AgendaVital {
 
                     // Pressão Arterial
                     let valores = reg.pressao.split("/");
-                    let sistolica = Number(valores[0]) * 10;
-                    let diastolica = Number(valores[1]) * 10;
+                    let sistolica = Number(valores[0]);
+                    let diastolica = Number(valores[1]);
                     let statusPressao = "";
 
                     if (sistolica < 90 || diastolica < 60) {
@@ -240,6 +264,7 @@ class AgendaVital {
                     } else {
                         statusPressao = "Pressão Arterial NORMAL";
                     }
+
 
                     // Frequência Cardíaca
                     let idade = this.cadastro.idade;
@@ -260,12 +285,17 @@ class AgendaVital {
                         maximo = 100;
                     }
 
-                    let statusFreq = "";
+                    if (reg.atividade == "Atividade Leve") {
+                        maximo += 15;
+                    } else if (reg.atividade == "Atividade Moderada/Intensa") {
+                        maximo += 30;
+                    }
 
+                    let statusFreq = "";
                     if (reg.frequencia < minimo) {
                         statusFreq = "Abaixo da referência usual";
                     } else if (reg.frequencia > maximo) {
-                        statusFreq = "Acima da referência usual";
+                        statusFreq = "Acima da referência usual (Máx. esperado para a atividade: " + maximo + " bpm)";
                     } else {
                         statusFreq = "Dentro da referência usual";
                     }
@@ -306,10 +336,9 @@ class AgendaVital {
     iniciar() {
         // Inicialização do sistema
         alert(
-            "================================\n" +
             "          AGENDA VITAL\n" +
             "   Sistema de Monitoramento\n" +
-            "================================\n\n" +
+            "================================\n" +
             "Bem-vindo(a) à Agenda Vital!\n\n" +
             "Registre seus sinais vitais,\n" +
             "acompanhe seu histórico e\n" +
