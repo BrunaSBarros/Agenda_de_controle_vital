@@ -34,7 +34,7 @@ class CadastroPessoal {
     mostrarDados() {
         return "Idade: " + this.idade + " anos\n" +
             "Peso: " + this.peso + " kg\n" +
-            "Altura: " + this.altura + " m";
+            "Altura: " + this.altura + " cm";
     }
 }
 
@@ -75,7 +75,7 @@ class AgendaVital {
     cadastrarPessoa() {
         let idade = Number(prompt("Informe sua idade:"));
         let peso = Number(prompt("Informe seu peso em kg:"));
-        let altura = Number(prompt("Informe sua altura em metros:"));
+        let altura = Number(prompt("Informe sua altura em :"));
 
         if (isNaN(idade) || idade < 0 ||
             isNaN(peso) || peso <= 0 ||
@@ -214,6 +214,7 @@ class AgendaVital {
                     somaSaturacao += reg.saturacao;
                     somaFrequencia += reg.frequencia;
 
+                    // Saturação
                     let statusSat = "";
 
                     if (reg.saturacao >= 95) {
@@ -224,13 +225,66 @@ class AgendaVital {
                         statusSat = "Valor baixo; procure orientação";
                     }
 
+                    // Pressão Arterial
+                    let valores = reg.pressao.split("/");
+                    let sistolica = Number(valores[0]) * 10;
+                    let diastolica = Number(valores[1]) * 10;
+                    let statusPressao = "";
+
+                    if (sistolica < 90 || diastolica < 60) {
+                        statusPressao = "HIPOTENSÃO";
+                    } else if (sistolica >= 140 || diastolica >= 90) {
+                        statusPressao = "HIPERTENSÃO";
+                    } else if (sistolica >= 120 || diastolica >= 80) {
+                        statusPressao = "PRÉ-HIPERTENSÃO";
+                    } else {
+                        statusPressao = "Pressão Arterial NORMAL";
+                    }
+
+                    // Frequência Cardíaca
+                    let idade = this.cadastro.idade;
+                    let minimo = 60;
+                    let maximo = 100;
+
+                    if (idade <= 5) {
+                        minimo = 80;
+                        maximo = 160;
+                    } else if (idade <= 17) {
+                        minimo = 60;
+                        maximo = 120;
+                    } else if (idade < 60) {
+                        minimo = 60;
+                        maximo = 100;
+                    } else {
+                        minimo = 60;
+                        maximo = 100;
+                    }
+
+                    let statusFreq = "";
+
+                    if (reg.frequencia < minimo) {
+                        statusFreq = "Abaixo da referência usual";
+                    } else if (reg.frequencia > maximo) {
+                        statusFreq = "Acima da referência usual";
+                    } else {
+                        statusFreq = "Dentro da referência usual";
+                    }
+
+                    let statusSono = "";
+
+                    if (reg.sono < 7) {
+                        statusSono = "Abaixo do recomendado";
+                    } else {
+                        statusSono = "Quantidade adequada";
+                    }
+
                     textoDiario +=
                         "\nHorário: " + reg.horario + "\n" +
                         "Saturação: " + reg.saturacao + "% (" + statusSat + ")\n" +
-                        "Pressão arterial: " + reg.pressao + "\n" +
-                        "Frequência cardíaca: " + reg.frequencia + " bpm\n" +
+                        "Pressão arterial: " + reg.pressao + " (" + statusPressao + ")\n" +
+                        "Frequência cardíaca: " + reg.frequencia + " bpm (" + statusFreq + ")\n" +
                         "Atividade: " + reg.atividade + "\n" +
-                        "Sono: " + reg.sono + " horas\n" +
+                        "Sono: " + reg.sono + " horas (" + statusSono + ")\n" +
                         "Sintomas: " + reg.sintomas + "\n" +
                         "Observação: " + reg.observacao + "\n";
                 }
