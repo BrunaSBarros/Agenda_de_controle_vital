@@ -64,7 +64,7 @@ class AgendaVital {
 
         escolha = Number(escolha);
 
-        if (isNaN(escolha) || escolha < 1 || escolha > 7) {
+        if (isNaN(escolha) || escolha % 1 !== 0 || escolha < 1 || escolha > 7) {
             alert("Dia inválido.");
             return null;
         }
@@ -96,15 +96,52 @@ class AgendaVital {
 
     // Cadastrar Pessoa
     cadastrarPessoa() {
-        let idade = Number(prompt("Informe sua idade:"));
-        let peso = Number(prompt("Informe seu peso em kg:"));
-        let altura = Number(prompt("Informe sua altura em cm:"));
+        let ok = false;
+        let idade;
+        while (!ok) {
+            let entradaIdade = prompt("Informe sua idade:");
+            if (entradaIdade === null || entradaIdade === "") {
+                alert("Idade Inválida.");
+            } else {
+                idade = Number(entradaIdade);
+                if (isNaN(idade) || idade < 0 || idade % 1 !== 0) {
+                    alert("Idade Inválida.");
+                } else {
+                    ok = true;
+                }
+            }
+        }
 
-        if (isNaN(idade) || idade < 0 ||
-            isNaN(peso) || peso <= 0 ||
-            isNaN(altura) || altura <= 0) {
-            alert("Dados inválidos.");
-            return;
+        ok = false;
+        let peso;
+        while (!ok) {
+            let entradaPeso = prompt("Informe seu peso em kg:");
+            if (entradaPeso === null || entradaPeso === "") {
+                alert("Peso Inválido.");
+            } else {
+                peso = Number(entradaPeso);
+                if (isNaN(peso) || peso < 0) {
+                    alert("Peso Inválido.");
+                } else {
+                    ok = true;
+                }
+            }
+        }
+
+        ok = false;
+        let altura;
+        while (!ok) {
+            let entradaAltura = prompt("Informe sua altura em cm:");
+            if (entradaAltura === null || entradaAltura === "") {
+                alert("Altura Inválida.");
+            } else {
+                altura = Number(entradaAltura);
+                if (isNaN(altura) || altura < 0 || altura % 1 !== 0) {
+                    alert("Altura Inválida.");
+                } else {
+                    ok = true;
+                }
+            }
         }
 
         this.cadastro = new CadastroPessoal(idade, peso, altura);
@@ -133,51 +170,78 @@ class AgendaVital {
         }
 
         let horario = prompt("Informe o horário (HH:MM):");
+        if (horario === null) return;
 
-        if (horario === null) {
+        horario = horario.replace(";", ":");
+        let partesHorario = horario.split(":");
+        if (partesHorario.length != 2) {
+            alert("Horário inválido. Use HH:MM.\nCadastro Cancelado, realize novamente!");
             return;
         }
 
-        let partesHorario = horario.split(":");
+        let horas = Number(partesHorario[0]);
+        let minutos = Number(partesHorario[1]);
 
-        if (partesHorario.length != 2 ||
-            isNaN(partesHorario[0]) || isNaN(partesHorario[1])) {
-            alert("Horário inválido. Use HH:MM.");
+        if (isNaN(horas) || isNaN(minutos) || horas < 0 || horas > 23 || minutos < 0 || minutos > 59 || horas % 1 !== 0 || minutos % 1 !== 0) {
+            alert("Horário inexistente. O horário deve ser entre 00:00 e 23:59.\nCadastro Cancelado, realize novamente!");
             return;
         }
 
         let saturacao = Number(prompt("Informe a saturação (%):"));
 
-        if (isNaN(saturacao) || saturacao < 0 || saturacao > 100) {
-            alert("Saturação inválida.");
+        if (isNaN(saturacao) || saturacao < 0 || saturacao > 100 || saturacao % 1 !== 0) {
+            alert("Saturação inválida.\nCadastro Cancelado, realize novamente!");
             return;
         }
 
         let pressao = prompt("Informe a pressão arterial (ex.: 120/80):");
 
         if (pressao === null || pressao === "") {
-            alert("Informe a pressão arterial.");
+            alert("Informe a pressão arterial.\nCadastro Cancelado, realize novamente!");
             return;
+        }
+
+        let valoresPressao = pressao.split("/");
+        if (valoresPressao.length !== 2) {
+            alert("Formato de pressão inválido. Use a barra separadora (ex: 120/80).\nCadastro Cancelado, realize novamente!");
+            return
+        }
+        let sistolica = Number(valoresPressao[0]);
+        let diastolica = Number(valoresPressao[1]);
+        if (diastolica >= sistolica) {
+            alert("Erro: A pressão diastólica (mínima) não pode ser maior que a sistólica (máxima). \nCadastro Cancelado, realize novamente!")
+            return
         }
 
         let frequencia = Number(prompt("Informe a frequência cardíaca (bpm):"));
 
         if (isNaN(frequencia) || frequencia <= 0) {
-            alert("Frequência inválida.");
+            alert("Frequência inválida.\nCadastro Cancelado, realize novamente!");
             return;
         }
 
         let atividade = this.escolherAtividade();
         if (atividade === null) return;
+
         let sono = Number(prompt("Quantas horas dormiu?"));
+        if (sono === "" || isNaN(sono) || sono < 0 || sono > 24) {
+            alert("Quantidade de horas de sono inválida. Deve ser um número entre 0 e 24.\nCadastro Cancelado, realize novamente!");
+            return;
+        }
+
         let sintomas = prompt("Apresentou algum sintoma?");
+        if (sintomas === null)
+            return
+        if (sintomas === "") {
+            sintomas = "Nenhum"
+        }
 
         if (atividade === null || sintomas === null) {
             return;
         }
 
         if (isNaN(sono) || sono < 0 || sono > 24) {
-            alert("Quantidade de horas de sono inválida.");
+            alert("Quantidade de horas de sono inválida.\nCadastro Cancelado, realize novamente!");
             return;
         }
 
