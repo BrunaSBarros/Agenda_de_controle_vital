@@ -71,6 +71,7 @@ class AgendaVital {
 
         return this.dias[escolha - 1];
     }
+
     escolherAtividade() {
         let texto = "Selecione a atividade no momento do registro:\n" +
             "1 - Em Repouso\n" +
@@ -93,14 +94,16 @@ class AgendaVital {
         return "Em Repouso";
     }
 
-
     // Cadastrar Pessoa
     cadastrarPessoa() {
         let ok = false;
         let idade;
         while (!ok) {
             let entradaIdade = prompt("Informe sua idade:");
-            if (entradaIdade === null || entradaIdade === "") {
+            if (entradaIdade === null) {
+                return;
+            }
+            if (entradaIdade === "") {
                 alert("Idade Inválida.");
             } else {
                 idade = Number(entradaIdade);
@@ -116,7 +119,10 @@ class AgendaVital {
         let peso;
         while (!ok) {
             let entradaPeso = prompt("Informe seu peso em kg:");
-            if (entradaPeso === null || entradaPeso === "") {
+            if (entradaPeso === null) {
+                return;
+            }
+            if (entradaPeso === "") {
                 alert("Peso Inválido.");
             } else {
                 peso = Number(entradaPeso);
@@ -132,7 +138,10 @@ class AgendaVital {
         let altura;
         while (!ok) {
             let entradaAltura = prompt("Informe sua altura em cm:");
-            if (entradaAltura === null || entradaAltura === "") {
+            if (entradaAltura === null) {
+                return;
+            }
+            if (entradaAltura === "") {
                 alert("Altura Inválida.");
             } else {
                 altura = Number(entradaAltura);
@@ -223,10 +232,26 @@ class AgendaVital {
         let atividade = this.escolherAtividade();
         if (atividade === null) return;
 
-        let sono = Number(prompt("Quantas horas dormiu?"));
-        if (sono === "" || isNaN(sono) || sono < 0 || sono > 24) {
-            alert("Quantidade de horas de sono inválida. Deve ser um número entre 0 e 24.\nCadastro Cancelado, realize novamente!");
-            return;
+        let sono = null;
+        let diaJaCadastrado = false;
+        let horasSonoAnterior = 0;
+
+        for (let i = 0; i < this.registros.length; i++) {
+            if (this.registros[i].dia === dia) {
+                diaJaCadastrado = true;
+                horasSonoAnterior = this.registros[i].sono;
+            }
+        }
+
+        if (diaJaCadastrado) {
+            sono = horasSonoAnterior;
+            alert("Nota: Como você já possui registro em " + dia + ", o valor do sono (" + sono + "h) foi mantido automaticamente.");
+        } else {
+            sono = Number(prompt("Quantas horas dormiu?"));
+            if (sono === "" || isNaN(sono) || sono < 0 || sono > 24) {
+                alert("Quantidade de horas de sono inválida. Deve ser um número entre 0 e 24.\nCadastro Cancelado, realize novamente!");
+                return;
+            }
         }
 
         let sintomas = prompt("Apresentou algum sintoma?");
@@ -234,15 +259,6 @@ class AgendaVital {
             return
         if (sintomas === "") {
             sintomas = "Nenhum"
-        }
-
-        if (atividade === null || sintomas === null) {
-            return;
-        }
-
-        if (isNaN(sono) || sono < 0 || sono > 24) {
-            alert("Quantidade de horas de sono inválida.\nCadastro Cancelado, realize novamente!");
-            return;
         }
 
         let observacao = prompt("Deseja adicionar alguma observação?");
@@ -400,8 +416,8 @@ class AgendaVital {
     iniciar() {
         // Inicialização do sistema
         alert(
-            "          AGENDA VITAL\n" +
-            "   Sistema de Monitoramento\n" +
+            "            AGENDA VITAL\n" +
+            "    Sistema de Monitoramento\n" +
             "================================\n" +
             "Bem-vindo(a) à Agenda Vital!\n\n" +
             "Registre seus sinais vitais,\n" +
