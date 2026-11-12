@@ -1,3 +1,4 @@
+
 class RegistroVital {
     constructor(dia, horario, saturacao, pressao, frequencia, atividade, sono, sintomas, observacao) {
         this.dia = dia;
@@ -21,7 +22,6 @@ class RegistroVital {
             "Sono: " + this.sono + " horas\n" +
             "Sintomas: " + this.sintomas + "\n" +
             "Observação: " + this.observacao;
-
     }
 }
 
@@ -43,52 +43,40 @@ class AgendaVital {
     constructor() {
         this.registros = [];
         this.cadastro = null;
-        this.dias = [
-            "Segunda-feira", "Terça-feira", "Quarta-feira",
-            "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"
-        ];
+        this.diaAtual = null;
+        this.indiceEdicao = null;
+        this.dias = ["Segunda-feira", "Terça-feira", "Quarta-feira",
+            "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
     }
 
     escolherDia() {
         let texto = "Escolha o dia:\n";
-
         for (let i = 0; i < this.dias.length; i++) {
             texto += (i + 1) + " - " + this.dias[i] + "\n";
         }
 
         let escolha = prompt(texto);
-
-        if (escolha === null || escolha === "") {
-            return null;
-        }
+        if (escolha === null || escolha === "") return null;
 
         escolha = Number(escolha);
-
         if (isNaN(escolha) || escolha % 1 !== 0 || escolha < 1 || escolha > 7) {
             alert("Dia inválido.");
             return null;
         }
-
         return this.dias[escolha - 1];
     }
 
     escolherAtividade() {
         let texto = "Selecione a atividade no momento do registro:\n" +
-            "1 - Em Repouso\n" +
-            "2 - Atividade Leve\n" +
-            "3 - Atividade Moderada/Intensa";
-
+            "1 - Em Repouso\n2 - Atividade Leve\n3 - Atividade Moderada/Intensa";
         let escolha = prompt(texto);
-        if (escolha === null || escolha == "") {
-            return null;
-        }
+        if (escolha === null || escolha === "") return null;
 
         escolha = Number(escolha);
         if (isNaN(escolha) || escolha < 1 || escolha > 3) {
             alert("Opção inválida. Definido como Repouso por padrão.");
             return "Em Repouso";
         }
-
         if (escolha == 2) return "Atividade Leve";
         if (escolha == 3) return "Atividade Moderada/Intensa";
         return "Em Repouso";
@@ -98,11 +86,11 @@ class AgendaVital {
     cadastrarPessoa() {
         let ok = false;
         let idade;
+
         while (!ok) {
             let entradaIdade = prompt("Informe sua idade:");
-            if (entradaIdade === null) {
-                return;
-            }
+            if (entradaIdade === null) return;
+
             if (entradaIdade === "") {
                 alert("Idade Inválida.");
             } else {
@@ -117,11 +105,11 @@ class AgendaVital {
 
         ok = false;
         let peso;
+
         while (!ok) {
             let entradaPeso = prompt("Informe seu peso em kg:");
-            if (entradaPeso === null) {
-                return;
-            }
+            if (entradaPeso === null) return;
+
             if (entradaPeso === "") {
                 alert("Peso Inválido.");
             } else {
@@ -136,11 +124,11 @@ class AgendaVital {
 
         ok = false;
         let altura;
+
         while (!ok) {
             let entradaAltura = prompt("Informe sua altura em cm:");
-            if (entradaAltura === null) {
-                return;
-            }
+            if (entradaAltura === null) return;
+
             if (entradaAltura === "") {
                 alert("Altura Inválida.");
             } else {
@@ -173,16 +161,17 @@ class AgendaVital {
         }
 
         let dia = this.escolherDia();
+        if (dia === null) return;
 
-        if (dia === null) {
-            return;
-        }
+        this.diaAtual = dia;
+        this.indiceEdicao = null;
 
         let horario = prompt("Informe o horário (HH:MM):");
         if (horario === null) return;
 
         horario = horario.replace(";", ":");
         let partesHorario = horario.split(":");
+
         if (partesHorario.length != 2) {
             alert("Horário inválido. Use HH:MM.\nCadastro Cancelado, realize novamente!");
             return;
@@ -191,53 +180,93 @@ class AgendaVital {
         let horas = Number(partesHorario[0]);
         let minutos = Number(partesHorario[1]);
 
-        if (isNaN(horas) || isNaN(minutos) || horas < 0 || horas > 23 || minutos < 0 || minutos > 59 || horas % 1 !== 0 || minutos % 1 !== 0) {
+        if (isNaN(horas) || isNaN(minutos) || horas < 0 ||
+            horas > 23 || minutos < 0 || minutos > 59 ||
+            horas % 1 !== 0 || minutos % 1 !== 0) {
             alert("Horário inexistente. O horário deve ser entre 00:00 e 23:59.\nCadastro Cancelado, realize novamente!");
             return;
         }
 
-        let saturacao = Number(prompt("Informe a saturação (%):"));
+        let saturacao = this.setSaturacao();
+        if (saturacao === undefined) return;
+        let pressao = this.setPressao();
+        if (pressao === undefined) return;
+        let frequencia = this.setFrequencia();
+        if (frequencia === undefined) return;
+        let atividade = this.escolherAtividade();
+        if (atividade === null) return;
+        let sono = this.setsono();
+        if (sono === undefined) return;
+        let sintomas = this.setSintomas();
+        if (sintomas === undefined) return;
+        let observacao = this.setObservacao();
+        if (observacao === undefined) return;
 
-        if (isNaN(saturacao) || saturacao < 0 || saturacao > 100 || saturacao % 1 !== 0) {
+        let registro = new RegistroVital(dia, horario, saturacao, pressao,
+            frequencia, atividade, sono, sintomas, observacao);
+        this.registros.push(registro);
+        alert("Registro cadastrado!\n\n" + registro.mostrar());
+    }
+
+    // Cadastro de saturação
+    setSaturacao() {
+        let entrada = prompt("Informe a saturação (%):");
+        if (entrada === null) return undefined;
+
+        let saturacao = Number(entrada);
+        if (entrada === "" || isNaN(saturacao) ||
+            saturacao < 0 || saturacao > 100 || saturacao % 1 !== 0) {
             alert("Saturação inválida.\nCadastro Cancelado, realize novamente!");
-            return;
+            return undefined;
         }
+        return saturacao;
+    }
 
+    // Cadastro de pressão arterial
+    setPressao() {
         let pressao = prompt("Informe a pressão arterial (ex.: 120/80):");
-
         if (pressao === null || pressao === "") {
             alert("Informe a pressão arterial.\nCadastro Cancelado, realize novamente!");
-            return;
+            return undefined;
         }
 
         let valoresPressao = pressao.split("/");
         if (valoresPressao.length !== 2) {
             alert("Formato de pressão inválido. Use a barra separadora (ex: 120/80).\nCadastro Cancelado, realize novamente!");
-            return
+            return undefined;
         }
+
         let sistolica = Number(valoresPressao[0]);
         let diastolica = Number(valoresPressao[1]);
-        if (diastolica >= sistolica) {
-            alert("Erro: A pressão diastólica (mínima) não pode ser maior que a sistólica (máxima). \nCadastro Cancelado, realize novamente!")
-            return
+        if (valoresPressao[0] === "" || valoresPressao[1] === "" ||
+            isNaN(sistolica) || isNaN(diastolica) || diastolica >= sistolica) {
+            alert("Erro: A pressão diastólica (mínima) não pode ser maior que a sistólica (máxima).\nCadastro Cancelado, realize novamente!");
+            return undefined;
         }
+        return pressao;
+    }
 
-        let frequencia = Number(prompt("Informe a frequência cardíaca (bpm):"));
+    // Cadastro de frequência cardíaca
+    setFrequencia() {
+        let entrada = prompt("Informe a frequência cardíaca (bpm):");
+        if (entrada === null) return undefined;
 
-        if (isNaN(frequencia) || frequencia <= 0) {
+        let frequencia = Number(entrada);
+        if (entrada === "" || isNaN(frequencia) || frequencia <= 0) {
             alert("Frequência inválida.\nCadastro Cancelado, realize novamente!");
-            return;
+            return undefined;
         }
+        return frequencia;
+    }
 
-        let atividade = this.escolherAtividade();
-        if (atividade === null) return;
-
+    // Cadastro de horas de sono
+    setsono() {
         let sono = null;
         let diaJaCadastrado = false;
         let horasSonoAnterior = 0;
 
         for (let i = 0; i < this.registros.length; i++) {
-            if (this.registros[i].dia === dia) {
+            if (this.registros[i].dia === this.diaAtual && i !== this.indiceEdicao) {
                 diaJaCadastrado = true;
                 horasSonoAnterior = this.registros[i].sono;
             }
@@ -245,35 +274,35 @@ class AgendaVital {
 
         if (diaJaCadastrado) {
             sono = horasSonoAnterior;
-            alert("Nota: Como você já possui registro em " + dia + ", o valor do sono (" + sono + "h) foi mantido automaticamente.");
+            alert("Nota: Como você já possui registro em " + this.diaAtual +
+                ", o valor do sono (" + sono + "h) foi mantido automaticamente.");
         } else {
-            sono = Number(prompt("Quantas horas dormiu?"));
-            if (sono === "" || isNaN(sono) || sono < 0 || sono > 24) {
+            let entrada = prompt("Quantas horas dormiu?");
+            if (entrada === null) return undefined;
+
+            sono = Number(entrada);
+            if (entrada === "" || isNaN(sono) || sono < 0 || sono > 24) {
                 alert("Quantidade de horas de sono inválida. Deve ser um número entre 0 e 24.\nCadastro Cancelado, realize novamente!");
-                return;
+                return undefined;
             }
         }
+        return sono;
+    }
 
+    // Cadastro de sintomas
+    setSintomas() {
         let sintomas = prompt("Apresentou algum sintoma?");
-        if (sintomas === null)
-            return
-        if (sintomas === "") {
-            sintomas = "Nenhum"
-        }
+        if (sintomas === null) return undefined;
+        if (sintomas === "") sintomas = "Nenhum";
+        return sintomas;
+    }
 
+    // Cadastro de observação
+    setObservacao() {
         let observacao = prompt("Deseja adicionar alguma observação?");
-
-        if (observacao === null || observacao === "") {
-            observacao = "Nenhuma";
-        }
-
-        let registro = new RegistroVital(
-            dia, horario, saturacao, pressao, frequencia,
-            atividade, sono, sintomas, observacao
-        );
-
-        this.registros.push(registro);
-        alert("Registro cadastrado!\n\n" + registro.mostrar());
+        if (observacao === null) return undefined;
+        if (observacao === "") observacao = "Nenhuma";
+        return observacao;
     }
 
     // Histórico de registros cadastrados
@@ -284,12 +313,10 @@ class AgendaVital {
         }
 
         let texto = "HISTÓRICO DE SINAIS VITAIS\n\n";
-
         for (let i = 0; i < this.registros.length; i++) {
-            texto += this.registros[i].mostrar() +
+            texto += "[" + (i + 1) + "] " + this.registros[i].mostrar() +
                 "\n-------------------------\n";
         }
-
         alert(texto);
     }
 
@@ -320,7 +347,6 @@ class AgendaVital {
 
                     // Saturação
                     let statusSat = "";
-
                     if (reg.saturacao >= 95) {
                         statusSat = "Dentro da referência usual";
                     } else if (reg.saturacao >= 93) {
@@ -344,7 +370,6 @@ class AgendaVital {
                     } else {
                         statusPressao = "Pressão Arterial NORMAL";
                     }
-
 
                     // Frequência Cardíaca
                     let idade = this.cadastro.idade;
@@ -381,15 +406,13 @@ class AgendaVital {
                     }
 
                     let statusSono = "";
-
                     if (reg.sono < 7) {
                         statusSono = "Abaixo do recomendado";
                     } else {
                         statusSono = "Quantidade adequada";
                     }
 
-                    textoDiario +=
-                        "\nHorário: " + reg.horario + "\n" +
+                    textoDiario += "\nHorário: " + reg.horario + "\n" +
                         "Saturação: " + reg.saturacao + "% (" + statusSat + ")\n" +
                         "Pressão arterial: " + reg.pressao + " (" + statusPressao + ")\n" +
                         "Frequência cardíaca: " + reg.frequencia + " bpm (" + statusFreq + ")\n" +
@@ -409,8 +432,32 @@ class AgendaVital {
                 texto += "-------------------------\n";
             }
         }
-
         alert(texto);
+    }
+
+    // Selecionar registro para editar ou excluir
+    selecionarRegistro() {
+        if (this.registros.length === 0) {
+            alert("Nenhum registro cadastrado.");
+            return;
+        }
+
+        let texto = "REGISTROS CADASTRADOS\n\n";
+        for (let i = 0; i < this.registros.length; i++) {
+            texto += "[" + (i + 1) + "] " + this.registros[i].mostrar() +
+                "\n-------------------------\n";
+        }
+
+        let escolha = prompt(texto + "\nEscolha o número do registro:");
+        if (escolha === null || escolha === "") return;
+
+        escolha = Number(escolha);
+        if (isNaN(escolha) || escolha % 1 !== 0 ||
+            escolha < 1 || escolha > this.registros.length) {
+            alert("Registro inválido.");
+            return;
+        }
+        this.editarOUexcluir(escolha - 1);
     }
 
     iniciar() {
@@ -427,10 +474,9 @@ class AgendaVital {
         );
 
         this.cadastrarPessoa();
-
         let opcao = 0;
 
-        while (opcao != 6) {
+        while (opcao != 7) {
             let resposta = prompt(
                 "AGENDA VITAL\n\n" +
                 "1 - Cadastrar novos sinais\n" +
@@ -438,12 +484,13 @@ class AgendaVital {
                 "3 - Gerar relatório semanal\n" +
                 "4 - Ver cadastro pessoal\n" +
                 "5 - Atualizar dados pessoais\n" +
-                "6 - Sair\n\n" +
+                "6 - Atualizar ou Excluir cadastro de sinais\n" +
+                "7 - Sair\n\n" +
                 "Escolha uma opção:"
             );
 
             if (resposta === null || resposta === "") {
-                opcao = 6;
+                opcao = 7;
             } else {
                 opcao = Number(resposta);
             }
@@ -459,9 +506,11 @@ class AgendaVital {
             } else if (opcao == 5) {
                 this.cadastrarPessoa();
             } else if (opcao == 6) {
+                this.selecionarRegistro();
+            } else if (opcao == 7) {
                 alert("Encerrando a Agenda Vital. Cuide-se!");
             } else {
-                alert("Opção inválida. Escolha entre 1 e 6.");
+                alert("Opção inválida. Escolha entre 1 e 7.");
             }
         }
     }
