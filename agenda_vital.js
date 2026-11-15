@@ -84,7 +84,8 @@ class AgendaVital {
         }
 
         escolha = Number(escolha);
-        if (isNaN(escolha) || escolha < 1 || escolha > 3) {
+        if (isNaN(escolha) || escolha % 1 !== 0 ||
+            escolha < 1 || escolha > 3) {
             alert("Opção inválida. Definido como Repouso por padrão.");
             return "Em Repouso";
         }
@@ -177,8 +178,11 @@ class AgendaVital {
         if (dia === null) {
             return;
         }
+
         let horario = this.setHorario()
         if (horario === undefined) return;
+
+        if (!this.verificarHorario(dia, horario)) return;
 
         let saturacao = this.setSaturacao()
         if (saturacao === undefined) return;
@@ -233,6 +237,20 @@ class AgendaVital {
             }
         }
         return horario;
+    }
+    verificarHorario(dia, horario) {
+        for (let i = 0; i < this.registros.length; i++) {
+            if (this.registros[i].dia === dia &&
+                this.registros[i].horario === horario) {
+
+                alert("Você já cadastrou neste mesmo horário no dia " +
+                    dia + ". Verifique o horário.");
+
+                return false;
+            }
+        }
+
+        return true;
     }
     setSaturacao() {
         let ok = false;
@@ -496,7 +514,7 @@ class AgendaVital {
         for (let i = 0; i < this.registros.length; i++) {
             texto += "[" + (i + 1) + "]" + this.registros[i].mostrar() + "\n------------------------\n";
         }
-        let escolha = prompt(texto + "\nEscolha o número do registro");
+        let escolha = prompt(texto + "\nDigite o número do registro que deseja EDITAR ou EXCLUIR:");
         if (escolha === null || escolha === "") return;
         escolha = Number(escolha);
         if (isNaN(escolha) || escolha % 1 !== 0 || escolha < 1 || escolha > this.registros.length) {
@@ -612,7 +630,7 @@ class AgendaVital {
                 alert("Encerrando a Agenda Vital. Cuide-se!");
             }
             else {
-                alert("Opção inválida. Escolha entre 1 e 6.");
+                alert("Opção inválida. Escolha entre 1 e 7.");
             }
         }
     }
